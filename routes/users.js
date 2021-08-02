@@ -78,11 +78,15 @@ router.post('/register', function(req, res, next) {
   }
 
   const hashedPassword = generateHash(password);
-  
+  const file = req.files["profilePicture"];
+  const filePath = `./uploads/${file.name}`;
+  file.mv(filePath);
+  console.log("hello", file.size);
   const user = new User({
     name: req.body["name"],
     email: req.body["email"],
     hashedPassword: hashedPassword,
+    profilePicture: filePath,
   });
 
   user.save().then(() => {
@@ -129,6 +133,53 @@ router.get("/insecure", function (req, res, next) {
   res.status(200).send({
     status: 200,
     message: `I am insecure endpoint. No need token.`,
+  });
+});
+
+
+router.get("/allusers", function (req, res, next) {
+  User.find().then((users) => {
+    res.status(200).send({
+      status: 200,
+      message: "All students retrieved successfully.",
+      users: users,
+      x: 100,
+    });
+  });
+});
+
+
+
+router.post("/info", function (req, res, next) {
+  const email = req.body.email;
+  const profilePicture = req.files["profilePicture"];
+  const filePath = `./uploads/${profilePicture.name}`;
+  profilePicture.mv(filePath);
+
+User.findOne({ email: email })
+  .then((user) => {
+    if (!user) {
+      res.status(404).send({
+        status: 404,
+        message: "No user found.",
+      });
+
+      return;
+    }
+
+    user.profilePicture = filePath;
+    user.save();
+
+    res.status(200).send({
+      status: 200,
+      message: "Request processed successfully.",
+    });
+  })
+  .catch((error) => {
+    res.status(500).send({
+      status: 500,
+      message: `An error occured unexpectedly.`,
+    });
   });
 });
 

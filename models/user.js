@@ -9,6 +9,7 @@ const User = mongoose.model("User", {
     dropDups: true
   },
   hashedPassword: String,
+  profilePicture: String,
 });
 
 module.exports = User;

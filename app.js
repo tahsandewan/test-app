@@ -3,10 +3,12 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var fileUpload = require('express-fileupload');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var studentsRouter = require("./routes/students");
+var productsRouter = require("./routes/products");
 
 //for cors issue
 var cors = require('cors');
@@ -26,6 +28,7 @@ app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
+app.use(fileUpload());
 //for cors issue
 app.use(cors({
   allowedHeaders: '*',
@@ -39,6 +42,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use("/students", studentsRouter);
+app.use("/products", productsRouter);
 
 
 // catch 404 and forward to error handler
